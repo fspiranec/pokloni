@@ -275,6 +275,7 @@ export default function App() {
 
 
   const isAdmin = currentUser.role === "admin";
+  const isCreator = currentUser.role === "creator";
 
 
   return (
@@ -344,7 +345,7 @@ export default function App() {
                 return (
                   <li key={u.username}>
                     {i + 1}. {u.username}
-                    {claimed.length > 0 && (
+                    {!isCreator && claimed.length > 0 && (
                       <span className="ml-1 text-sm text-gray-600">
                         ({claimed.join(", ")})
                       </span>
@@ -358,7 +359,7 @@ export default function App() {
           </ul>
         </div>
         <div className="col-span-3 space-y-6">
-          {isAdmin && (
+          {(isAdmin || isCreator) && (
             <>
               <div>
                 <h2 className="font-semibold">Create User</h2>
@@ -471,10 +472,12 @@ export default function App() {
                 <>
                   <div>
                     <span className="font-bold">{item.name}</span>
-                    <span className="ml-2 text-sm text-gray-600">
-                      ({item.claimedBy.length}/{item.max > 0 ? item.max : "∞"})
-                      {item.claimedBy.length > 0 && ` ${item.claimedBy.join(", ")}`}
-                    </span>
+                    {!isCreator && (
+                      <span className="ml-2 text-sm text-gray-600">
+                        ({item.claimedBy.length}/{item.max > 0 ? item.max : "∞"})
+                        {item.claimedBy.length > 0 && ` ${item.claimedBy.join(", ")}`}
+                      </span>
+                    )}
                     {" – "}
                     {item.details}
                   </div>
@@ -488,6 +491,7 @@ export default function App() {
                       </button>
                     </div>
                   ) : (
+                    {!isCreator && (
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         onClick={() => claimItem(item, currentUser.username)}
@@ -513,6 +517,7 @@ export default function App() {
                       )}
                     </div>
                     )}
+                  )}
                   </>
                 )}
               </li>
@@ -520,7 +525,7 @@ export default function App() {
             </ul>
           </div>
 
-          {!isAdmin && (
+          {!isAdmin && !isCreator && (
             <div>
               <h2 className="font-semibold">My Claimed Items</h2>
               <ul className="mt-2 space-y-2">
